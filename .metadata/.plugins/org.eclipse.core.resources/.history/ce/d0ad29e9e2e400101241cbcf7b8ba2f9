@@ -1,0 +1,114 @@
+#include "servo.h"
+
+extern TIM_HandleTypeDef htim2;   // main.c'den alınır
+
+uint8_t servo_current[SERVO_COUNT] = {90, 90};
+uint8_t servo_target[SERVO_COUNT]  = {90, 90};
+
+typedef enum
+{
+    WALK_IDLE = 0,
+    WALK_HIP_FORWARD,
+    WALK_KNEE_BEND,
+    WALK_KNEE_STRAIGHT,
+    WALK_HIP_BACK
+} WalkState_t;
+
+uint16_t Servo_Angle_To_Pulse(uint8_t angle)
+{
+    return 500 + (angle * 2000) / 180;  // örnek
+}
+
+void Servo_SetTarget(uint8_t index, uint8_t angle)
+{
+    if (index >= SERVO_COUNT) return;
+    if (angle > 180) angle = 180;
+
+    servo_target[index] = angle;
+}
+
+void Servo_Smooth_Update(void)
+{
+    static uint32_t last_tick = 0;
+
+    if (HAL_GetTick() - last_tick < 20)
+        return;
+
+    last_tick = HAL_GetTick();
+
+    for (uint8_t i = 0; i < SERVO_COUNT; i++)
+    {
+        if (servo_current[i] < servo_target[i])
+            servo_current[i]++;
+        else if (servo_current[i] > servo_target[i])
+            servo_current[i]--;
+
+        uint16_t pulse = Servo_Angle_To_Pulse(servo_current[i]);
+
+        if (i == 0)
+            __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, pulse);
+        else if (i == 1)
+            __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, pulse);
+    }
+}
+
+void robot_walking(void)
+{
+    static WalkState_t state = WALK_IDLE;
+    static uint32_t state_tick = 0;
+
+    uint32_t now = HAL_GetTick();
+
+    switch (state)
+    {
+        case WALK_IDLE:
+            Servo_SetTarget(0, 90);  // kalça nötr
+            Servo_SetTarget(1, 90);  // diz nötr
+            state_tick = now;
+            state = WALK_HIP_FORWARD;
+            break;
+
+        case WALK_HIP_FORWARD:
+            Servo_SetTarget(0, 110); // kalça öne
+            if (now - state_tick > 400)
+            {
+                state_tick = now;
+                state = WALK_KNEE_BEND;
+            }
+            break;
+
+        case WALK_KNEE_BEND:
+            Servo_SetTarget(1, 60);  // diz bük
+            if (now - state_tick > 300)
+            {
+                state_tick = now;
+                state = WALK_KNEE_STRAIGHT;
+            }
+            break;
+
+        case WALK_KNEE_STRAIGHT:
+            Servo_SetTarget(1, 90);  // diz aç
+            if (now - state_tick > 300)
+            {
+                state_tick = now;
+                state = WALK_HIP_BACK;
+            }
+            break;
+
+        case WALK_HIP_BACK:
+            Servo_SetTarget(0, 90);  // kalça geri (nötr)
+            if (now - state_tick > 400)
+            {
+                state_tick = now;
+                state = WALK_HIP_FORWARD; // döngü
+            }
+            break;
+    }
+}
+
+
+
+
+
+
+

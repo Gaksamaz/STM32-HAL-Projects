@@ -1,0 +1,44 @@
+#include "servo.h"
+
+extern TIM_HandleTypeDef htim2;   // main.c'den alınır
+
+uint8_t servo_current[SERVO_COUNT] = {90, 90};
+uint8_t servo_target[SERVO_COUNT]  = {90, 90};
+
+uint16_t Servo_Angle_To_Pulse(uint8_t angle)
+{
+    return 500 + (angle * 2000) / 180;  // örnek
+}
+
+void Servo_SetTarget(uint8_t index, uint8_t angle)
+{
+    if (index >= SERVO_COUNT) return;
+    if (angle > 180) angle = 180;
+
+    servo_target[index] = angle;
+}
+
+void Servo_Smooth_Update(void)
+{
+    static uint32_t last_tick = 0;
+
+    if (HAL_GetTick() - last_tick < 20)
+        return;
+
+    last_tick = HAL_GetTick();
+
+    for (uint8_t i = 0; i < SERVO_COUNT; i++)
+    {
+        if (servo_current[i] < servo_target[i])
+            servo_current[i]++;
+        else if (servo_current[i] > servo_target[i])
+            servo_current[i]--;
+
+        uint16_t pulse = Servo_Angle_To_Pulse(servo_current[i]);
+
+        if (i == 0)
+            __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_2, pulse);
+        else if (i == 1)
+            __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_3, pulse);
+    }
+}

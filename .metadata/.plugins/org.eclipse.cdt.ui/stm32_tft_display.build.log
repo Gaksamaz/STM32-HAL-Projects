@@ -1,0 +1,10 @@
+21:16:26 **** Incremental Build of configuration Debug for project stm32_tft_display ****
+make -j4 all 
+arm-none-eabi-size  stm32_tft_display.elf 
+   text	   data	    bss	    dec	    hex	filename
+  22248	     96	   2088	  24432	   5f70	stm32_tft_display.elf
+Finished building: default.size.stdout
+ 
+
+21:16:26 Build Finished. 0 errors, 0 warnings. (took 104ms)
+

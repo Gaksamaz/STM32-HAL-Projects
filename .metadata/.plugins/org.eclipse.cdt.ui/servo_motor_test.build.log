@@ -1,0 +1,18 @@
+16:59:15 **** Incremental Build of configuration Debug for project servo_motor_test ****
+make -j4 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:88:3: warning: implicit declaration of function 'MX_GPIO_Init'; did you mean 'HAL_GPIO_Init'? [-Wimplicit-function-declaration]
+   88 |   MX_GPIO_Init();
+      |   ^~~~~~~~~~~~
+      |   HAL_GPIO_Init
+../Core/Src/main.c: In function 'SystemClock_Config':
+../Core/Src/main.c:159:21: error: 'RCC_ClkInitTypeDef' has no member named 'APB2CLkDivider'; did you mean 'APB2CLKDivider'?
+  159 |   RCC_ClkInitStruct.APB2CLkDivider = RCC_HCLK_DIV1;
+      |                     ^~~~~~~~~~~~~~
+      |                     APB2CLKDivider
+make: *** [Core/Src/subdir.mk:40: Core/Src/main.o] Error 1
+"make -j4 all" terminated with exit code 2. Build might be incomplete.
+
+16:59:16 Build Failed. 2 errors, 1 warnings. (took 195ms)
+

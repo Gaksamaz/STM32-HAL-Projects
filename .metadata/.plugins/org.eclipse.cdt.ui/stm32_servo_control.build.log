@@ -1,0 +1,10 @@
+21:16:26 **** Incremental Build of configuration Debug for project stm32_servo_control ****
+make -j4 all 
+arm-none-eabi-size  stm32_servo_control.elf 
+   text	   data	    bss	    dec	    hex	filename
+   3512	     12	   1572	   5096	   13e8	stm32_servo_control.elf
+Finished building: default.size.stdout
+ 
+
+21:16:26 Build Finished. 0 errors, 0 warnings. (took 144ms)
+

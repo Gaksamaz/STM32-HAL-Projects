@@ -1,0 +1,10 @@
+21:16:25 **** Incremental Build of configuration Debug for project stm32_calculator ****
+make -j4 all 
+arm-none-eabi-size  stm32_calculator.elf 
+   text	   data	    bss	    dec	    hex	filename
+   3512	     12	   1572	   5096	   13e8	stm32_calculator.elf
+Finished building: default.size.stdout
+ 
+
+21:16:25 Build Finished. 0 errors, 0 warnings. (took 94ms)
+
