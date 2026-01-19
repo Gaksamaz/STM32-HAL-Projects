@@ -1,0 +1,109 @@
+#include "mpu6050.h"
+
+uint8_t MPU6050_Init(I2C_HandleTypeDef *hi2c)
+{
+    uint8_t check; //WHO_AM_I degerlerini okuyacaz
+    uint8_t data; // registerlara yazacagimiz yer
+    HAL_StatusTypeDef ret; //HAL fonksiyonlarinin donus degeri (basarili mi degil mi)
+
+    // Önce reset
+    data = 0x80;
+    HAL_I2C_Mem_Write(hi2c, MPU6050_ADDR, MPU6050_PWR_MGMT_1, 1, &data, 1, 1000);
+    HAL_Delay(100);
+    /*  HAL_I2C_Mem_Write()` Parametreleri:
+    - `hi2c`: I2C handle pointer'ı
+    - `MPU6050_ADDR`: MPU6050'nin I2C adresi (0xD0 = 0x68 << 1)
+    - `MPU6050_PWR_MGMT_1`: Güç yönetimi register'ı (adres: 0x6B)
+    - `1`: Register adresi 1 byte
+    - `&data`: Yazılacak verinin adresi
+    - `1`: Kaç byte yazacağız (1 byte)
+    - `1000`: Timeout süresi (1000ms = 1 saniye)*/
+
+
+    // Uyku modundan çık resetten sonra mpu6050 uyku modundan acilir
+    data = 0x00;
+    ret = HAL_I2C_Mem_Write(hi2c, MPU6050_ADDR, MPU6050_PWR_MGMT_1, 1, &data, 1, 1000);//PWR_MGMT_1 register'ina 0x00 yazarak uyku modunu kapatiyoruz
+    if (ret != HAL_OK) return 1; // eger yazma basarisizsa 1 hata kodu dondur
+    HAL_Delay(10);
+    /*HAL_OK = başarılı (enum değeri 0)
+    HAL_ERROR = hata (enum değeri 1)
+    HAL_BUSY = meşgul (enum değeri 2)
+    HAL_TIMEOUT = zaman aşımı (enum değeri 3)*/
+
+    // WHO_AM_I kontrol
+    ret = HAL_I2C_Mem_Read(hi2c, MPU6050_ADDR, MPU6050_WHO_AM_I, 1, &check, 1, 1000);
+    if (ret != HAL_OK) return 2;
+
+    // MPU6000=0x68, MPU6050=0x68, MPU9150=0x68
+    if (check != 0x68)
+    {
+        return 3;  // Yanlış chip ID
+    }
+
+    // Accelerometer ±2g ayarla
+    data = 0x00;
+    ret = HAL_I2C_Mem_Write(hi2c, MPU6050_ADDR, MPU6050_ACCEL_CONFIG, 1, &data, 1, 1000);
+    if (ret != HAL_OK) return 4; //Accel config hatasi
+    HAL_Delay(10);
+
+    return 0;  // Başarılı
+    /*Hata Kodları Özeti:
+
+    0: Başarılı
+    1: PWR_MGMT_1 yazma hatası (uyku modundan çıkamadı)
+    2: WHO_AM_I okuma hatası (I2C iletişim sorunu)
+    3: Yanlış WHO_AM_I değeri (cihaz MPU6050 değil)
+    4: ACCEL_CONFIG yazma hatası*/
+}
+
+void MPU6050_Read_Accel(I2C_HandleTypeDef *hi2c, MPU6050_Data *data)
+{
+    uint8_t raw_data[6]; //6 byte ham veri (x, y, z icin 2'ser byte)
+    HAL_StatusTypeDef ret; // hal fonksiyonun donus degeri
+
+    // 6 byte oku
+    ret = HAL_I2C_Mem_Read(hi2c, MPU6050_ADDR, MPU6050_ACCEL_XOUT_H, 1, raw_data, 6, 1000);
+
+    if (ret == HAL_OK)
+    {
+        // Verileri birleştir
+        data->accel_x = (int16_t)(raw_data[0] << 8 | raw_data[1]);
+        data->accel_y = (int16_t)(raw_data[2] << 8 | raw_data[3]);
+        data->accel_z = (int16_t)(raw_data[4] << 8 | raw_data[5]);
+        /*   Adım adım:
+
+        1. **`raw_data[0] << 8`**: HIGH byte'ı 8 bit sola kaydır
+        ```
+           raw_data[0] = 0x12
+           0x12 << 8 = 0x1200
+        ```
+
+        2. **`| raw_data[1]`**: LOW byte ile OR işlemi
+        ```
+           0x1200 | 0x34 = 0x1234
+        ```
+
+        3. **`(int16_t)`**: İşaretli 16-bit tamsayıya çevir
+        ```
+           0x1234 = 4660 (pozitif)
+           0xFFFF = -1 (negatif)
+        ```
+
+        **Örnek hesaplama:**
+        ```
+        raw_data[0] = 0xFF (HIGH byte)
+        raw_data[1] = 0x00 (LOW byte)
+
+        0xFF << 8 = 0xFF00
+        0xFF00 | 0x00 = 0xFF00
+
+        (int16_t)0xFF00 = -256*/
+    }
+    else
+    {
+        // Hata durumunda 0 döndür
+        data->accel_x = 0;
+        data->accel_y = 0;
+        data->accel_z = 0;
+    }
+}

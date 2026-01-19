@@ -1,0 +1,292 @@
+
+claude code nedir
+
+16 Oca
+Claude Code, geliştiricilerin doğrudan terminal üzerinden Claude'a kodlama görevleri devredebileceği bir komut satırı aracıdır.
+
+Bu araç, kodlama işlerini daha verimli hale getirmek için tasarlanmış ve geliştiricilerin terminalde çalışırken Claude'un yeteneklerinden yararlanmalarını sağlıyor. Örneğin kod yazma, hata ayıklama, refactoring gibi görevlerde Claude'dan yardım isteyebilirsiniz.
+
+Claude Code'un en güncel özellikleri, kullanım şekli ve kurulum detayları hakkında daha fazla bilgi almak isterseniz, Anthropic'in dokümantasyonunu kontrol edebilirim. İlginizi çeken belirli bir özellik veya kullanım senaryosu var mı?
+
+linuxta stm32 ile stm32ide de mpu6050  sensorunden veri alarak terminalde yazdirmal istlyorum claude code u bunun icin nasil kullanabilirim
+
+16 Oca
+Claude Code'u STM32 projeniz için şu şekilde kullanabilirsiniz:
+
+Claude Code ile STM32 Geliştirme Süreci
+1. Claude Code Kurulumu Önce Claude Code'u terminalinize kurun (eğer henüz yapmadıysanız):
+
+bash
+# Kurulum komutu (genellikle)
+pip install claude-code
+# veya npm üzerinden kurulum varsa
+2. Proje Klasöründe Claude Code Başlatma STM32CubeIDE proje dizininizde:
+
+bash
+cd /path/to/your/stm32-project
+claude-code
+3. Claude Code'a Verebileceğiniz Görevler
+
+Claude Code'a şu tarz talimatlar verebilirsiniz:
+
+bash
+"STM32F4 için MPU6050 sensöründen I2C üzerinden veri okuyacak kod yaz. 
+HAL kütüphanesi kullan. Ana döngüde ivme ve gyro verilerini UART üzerinden
+terminale yazdır."
+Claude Code şunları yapabilir:
+
+MPU6050 I2C driver kodunu oluşturma
+STM32 HAL kütüphanesi ile I2C yapılandırması
+UART ile seri iletişim kurulumu
+Ana döngüde sensör verilerini okuma ve yazdırma kodları
+Gerekli header dosyaları ve fonksiyonları düzenleme
+4. Örnek İş Akışı
+
+bash
+# Claude Code'a adım adım görevler verin:
+"main.c dosyasında MPU6050_Init fonksiyonu oluştur"
+"MPU6050'den ivme verisi okuyan fonksiyon ekle"
+"UART üzerinden printf benzeri çıktı için helper fonksiyon yaz"
+"Ana döngüde 100ms aralıklarla sensör verilerini oku ve yazdır"
+Önemli Notlar:
+
+STM32CubeIDE ile oluşturduğunuz .ioc dosyasını Claude Code doğrudan düzenleyemez, ama C kodlarını yazabilir
+I2C ve UART pinlerini CubeMX'te önce yapılandırmanız gerekir
+Claude Code'un oluşturduğu kodu STM32CubeIDE'de derleyip cihaza yüklersiniz
+Claude Code'un en güncel kullanım detayları için dokümantasyonu araştırayım mı? Yoksa doğrudan MPU6050 kodunu burada oluşturmamı ister misiniz?
+
+olustur
+
+16 Oca
+STM32 için MPU6050 sensöründen veri okuyup terminalde yazdıran tam bir kod oluşturuyorum. Önce gerekli dosyaları hazırlayayım:
+
+
+3 steps
+
+README dosyası - kurulum ve kullanım talimatları
+README.md
+
+I2C Scanner yardımcı kodu - MPU6050 adresini bulmak için
+i2c_scanner.c
+Şimdi dosyaları çıktı klasörüne kopyalayıp size sunuyorum:
+
+
+Tüm oluşturulan dosyaları outputs klasörüne kopyalıyorum
+
+
+
+Presented 5 files
+Hazır! STM32 için MPU6050 sensör okuma projesini tamamladım. İşte dosyalar:
+
+📦 Oluşturulan Dosyalar:
+mpu6050.h - Driver header dosyası
+mpu6050.c - Driver implementasyonu
+main.c - Örnek ana program (UART ile veri yazdırma)
+i2c_scanner.c - I2C cihaz tarayıcı (sorun giderme için)
+README.md - Detaylı kurulum ve kullanım kılavuzu
+🎯 Özellikler:
+✅ MPU6050'den ivmeölçer, gyro ve sıcaklık verisi okuma
+✅ I2C üzerinden iletişim (100kHz)
+✅ UART ile terminalde görüntüleme (115200 baud)
+✅ Ham veri ve birim dönüştürülmüş veri desteği
+✅ Kolay entegrasyon için HAL kütüphanesi kullanımı
+
+🚀 Hızlı Başlangıç:
+STM32CubeIDE'de yeni proje oluşturun
+I2C1 ve USART2'yi yapılandırın (.ioc dosyası)
+mpu6050.h ve mpu6050.c dosyalarını projeye ekleyin
+main.c kodlarını kendi main dosyanıza entegre edin
+Derleyip yükleyin!
+README dosyasında bağlantı şeması, pin konfigürasyonu ve sorun giderme detayları mevcut. Başarılar! 🎉
+
+Readme
+Document · MD
+Mpu6050
+H
+Mpu6050
+C
+Main
+C
+I2c scanner
+C
+00:14:58 **** Incremental Build of configuration Debug for project MPU6050 ****
+make -j4 all
+arm-none-eabi-gcc "../Core/Src/Mpu6050.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/Mpu6050.d" -MT"Core/Src/Mpu6050.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/Mpu6050.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/syscalls.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/syscalls.d" -MT"Core/Src/syscalls.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/syscalls.o"
+arm-none-eabi-gcc "../Core/Src/sysmem.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/sysmem.d" -MT"Core/Src/sysmem.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/sysmem.o"
+../Core/Src/Mpu6050.c:1:10: fatal error: mpu6050.h: No such file or directory
+    1 | #include "mpu6050.h"
+      |          ^~~~~~~~~
+compilation terminated.
+make: *** [Core/Src/subdir.mk:43: Core/Src/Mpu6050.o] Error 1
+make: *** Waiting for unfinished jobs....
+../Core/Src/main.c:15:10: fatal error: mpu6050.h: No such file or directory
+   15 | #include "mpu6050.h"
+      |          ^~~~~~~~~
+compilation terminated.
+make: *** [Core/Src/subdir.mk:43: Core/Src/main.o] Error 1
+"make -j4 all" terminated with exit code 2. Build might be incomplete.
+00:14:58 Build Failed. 5 errors, 0 warnings. (took 255ms)
+bu hatalari verdi
+
+Show more
+00:15
+Hata açık - header dosyası bulunamıyor. STM32CubeIDE'de dosya yapısı önemli. Şöyle düzeltelim:
+
+🔧 Çözüm Adımları:
+1. Dosya Konumları Düzeltme
+mpu6050.h dosyasını şuraya koyun:
+
+MPU6050/Core/Inc/mpu6050.h
+mpu6050.c (veya Mpu6050.c) dosyasını şuraya koyun:
+
+MPU6050/Core/Src/mpu6050.c
+2. STM32CubeIDE'de Dosyaları Eklemek
+Yöntem 1 (Önerilen):
+
+Projeyi sağ tık → Refresh (F5)
+Core/Inc klasörüne sağ tık → New → File → mpu6050.h adını verin
+İçeriği kopyala-yapıştır
+Core/Src klasörüne sağ tık → New → File → mpu6050.c adını verin
+İçeriği kopyala-yapıştır
+Yöntem 2:
+
+Windows/Linux dosya yöneticisinden dosyaları kopyalayın
+STM32CubeIDE'de projeye sağ tık → Refresh (F5)
+3. Dosya İsimlendirmesi
+Dikkat: Dosyanızın adı Mpu6050.c (büyük M ile) ama include ediyor mpu6050.h (küçük m ile). Linux büyük/küçük harfe duyarlıdır!
+
+İki seçenek:
+
+A) Tüm dosyaları küçük harfle:
+
+mpu6050.h
+mpu6050.c
+#include "mpu6050.h"
+B) Tüm dosyaları büyük harfle:
+
+Mpu6050.h
+Mpu6050.c
+#include "Mpu6050.h"
+4. main.c İçeriği Kontrolü
+main.c dosyanızın başında şu kısım olmalı:
+
+c
+/* USER CODE BEGIN Includes */
+#include "mpu6050.h"  // veya "Mpu6050.h"
+#include <stdio.h>
+#include <string.h>
+/* USER CODE END Includes */
+```
+
+### 5. Proje Temizleme
+```
+Project → Clean → Clean all projects → OK
+Project → Build Project (Ctrl+B)
+✅ Hızlı Kontrol Listesi:
+ mpu6050.h dosyası Core/Inc/ klasöründe mi?
+ mpu6050.c dosyası Core/Src/ klasöründe mi?
+ Dosya isimleri tutarlı mı? (büyük/küçük harf)
+ Projeyi Refresh (F5) yaptınız mı?
+ Clean + Build yaptınız mı?
+Hangi yöntemi tercih edersiniz? Dosyaları küçük harfle mi yoksa büyük harfle mi isimlendirmek istersiniz?
+
+00:15:55 **** Incremental Build of configuration Debug for project MPU6050 ****
+make -j4 all
+arm-none-eabi-gcc "../Core/Src/gpio.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/gpio.d" -MT"Core/Src/gpio.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/gpio.o"
+arm-none-eabi-gcc "../Core/Src/i2c.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/i2c.d" -MT"Core/Src/i2c.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/i2c.o"
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc "../Core/Src/mpu6050.c" -mcpu=cortex-m3 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F103xB -c -I../Core/Inc -I../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I../Drivers/STM32F1xx_HAL_Driver/Inc -I../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I../Drivers/CMSIS/Include -I../USB_DEVICE/App -I../USB_DEVICE/Target -I../Middlewares/ST/STM32_USB_Device_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/mpu6050.d" -MT"Core/Src/mpu6050.o" --specs=nano.specs -mfloat-abi=soft -mthumb -o "Core/Src/mpu6050.o"
+In file included from ../Core/Src/mpu6050.c:1:
+../Core/Inc/mpu6050.h:4:10: fatal error: stm32f4xx_hal.h: No such file or directory
+    4 | #include "stm32f4xx_hal.h"
+      |          ^~~~~~~~~~~~~~~
+compilation terminated.
+make: *** [Core/Src/subdir.mk:43: Core/Src/mpu6050.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from ../Core/Src/main.c:15:
+../Core/Inc/mpu6050.h:4:10: fatal error: stm32f4xx_hal.h: No such file or directory
+    4 | #include "stm32f4xx_hal.h"
+      |          ^~~~~~~~~~~~~~~
+compilation terminated.
+make: *** [Core/Src/subdir.mk:43: Core/Src/main.o] Error 1
+"make -j4 all" terminated with exit code 2. Build might be incomplete.
+00:15:56 Build Failed. 5 errors, 0 warnings. (took 365ms)
+
+Show more
+00:16
+Ah! Sizin çipiniz STM32F1 (F103), ben STM32F4 için kod yazmışım! Hemen düzeltelim:
+
+
+STM32F4 HAL dosyasını F1 için değiştiriyorum
++5
+-5
+mpu6050.h
+
+Presented file
+Düzelttim! STM32F1xx için güncellenmiş mpu6050.h dosyasını indirin ve projenizde değiştirin.
+
+🔄 Yapmanız Gereken:
+Yeni mpu6050.h dosyasını indirin (yukarıdaki link)
+Projenizde Core/Inc/mpu6050.h dosyasını bu yeni dosya ile değiştirin
+Clean + Build yapın:
+Project → Clean
+Project → Build Project
+📝 Değişiklik:
+c
+// YANLIŞ (STM32F4 için):
+#include "stm32f4xx_hal.h"
+
+// DOĞRU (STM32F103 için):
+#include "stm32f1xx_hal.h"
+Diğer dosyalar (mpu6050.c, main.c) aynen kalabilir - sadece header dosyasını değiştirin. Tekrar build edin, hata gitmeli! 👍
+
+Mpu6050
+H
+
+
+
+
+
+Claude is AI and can make mistakes. Please double-check responses.
+Mpu6050 · H
+Copy
+
+#ifndef MPU6050_H
+#define MPU6050_H
+
+#include "stm32f1xx_hal.h"
+#include <stdint.h>
+
+// MPU6050 I2C Adresi
+#define MPU6050_ADDR 0xD0  // AD0 pin LOW ise
+
+// MPU6050 Register Adresleri
+#define MPU6050_REG_WHO_AM_I    0x75
+#define MPU6050_REG_PWR_MGMT_1  0x6B
+#define MPU6050_REG_SMPLRT_DIV  0x19
+#define MPU6050_REG_CONFIG      0x1A
+#define MPU6050_REG_GYRO_CONFIG 0x1B
+#define MPU6050_REG_ACCEL_CONFIG 0x1C
+#define MPU6050_REG_ACCEL_XOUT_H 0x3B
+
+// MPU6050 Veri Yapısı
+typedef struct {
+    int16_t accel_x;
+    int16_t accel_y;
+    int16_t accel_z;
+    int16_t temp;
+    int16_t gyro_x;
+    int16_t gyro_y;
+    int16_t gyro_z;
+} MPU6050_Data;
+
+// Fonksiyon Prototipleri
+uint8_t MPU6050_Init(I2C_HandleTypeDef *hi2c);
+void MPU6050_Read_All(I2C_HandleTypeDef *hi2c, MPU6050_Data *data);
+void MPU6050_Read_Accel(I2C_HandleTypeDef *hi2c, MPU6050_Data *data);
+void MPU6050_Read_Gyro(I2C_HandleTypeDef *hi2c, MPU6050_Data *data);
+float MPU6050_Get_Temp(int16_t temp_raw);
+
+#endif // MPU6050_H

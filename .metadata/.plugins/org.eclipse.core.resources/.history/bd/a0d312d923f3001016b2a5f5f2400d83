@@ -1,0 +1,96 @@
+#include "mpu6050.h"
+
+/**
+ * @brief MPU6050 sensörünü başlatır
+ * @param hi2c: I2C handle pointer
+ * @return 0: Başarılı, 1: Hata
+ */
+uint8_t MPU6050_Init(I2C_HandleTypeDef *hi2c) {
+    uint8_t check;
+    uint8_t data;
+
+    // WHO_AM_I register'ını kontrol et (0x68 olmalı)
+    HAL_I2C_Mem_Read(hi2c, MPU6050_ADDR, MPU6050_REG_WHO_AM_I, 1, &check, 1, HAL_MAX_DELAY);
+
+    if (check == 0x68) {  // MPU6050 bulundu
+        // Power Management register'ı ayarla (uyku modundan çık)
+        data = 0x00;
+        HAL_I2C_Mem_Write(hi2c, MPU6050_ADDR, MPU6050_REG_PWR_MGMT_1, 1, &data, 1, HAL_MAX_DELAY);
+
+        // Sample Rate Divider ayarla (1kHz)
+        data = 0x07;
+        HAL_I2C_Mem_Write(hi2c, MPU6050_ADDR, MPU6050_REG_SMPLRT_DIV, 1, &data, 1, HAL_MAX_DELAY);
+
+        // Accelerometer konfigürasyonu (±2g)
+        data = 0x00;
+        HAL_I2C_Mem_Write(hi2c, MPU6050_ADDR, MPU6050_REG_ACCEL_CONFIG, 1, &data, 1, HAL_MAX_DELAY);
+
+        // Gyroscope konfigürasyonu (±250°/s)
+        data = 0x00;
+        HAL_I2C_Mem_Write(hi2c, MPU6050_ADDR, MPU6050_REG_GYRO_CONFIG, 1, &data, 1, HAL_MAX_DELAY);
+
+        return 0;  // Başarılı
+    }
+
+    return 1;  // MPU6050 bulunamadı
+}
+
+/**
+ * @brief Tüm sensör verilerini okur (Accel + Gyro + Temp)
+ * @param hi2c: I2C handle pointer
+ * @param data: Veri yapısı pointer
+ */
+void MPU6050_Read_All(I2C_HandleTypeDef *hi2c, MPU6050_Data *data) {
+    uint8_t raw_data[14];
+
+    // 14 byte veri oku (ACCEL_XOUT_H'den başlayarak)
+    HAL_I2C_Mem_Read(hi2c, MPU6050_ADDR, MPU6050_REG_ACCEL_XOUT_H, 1, raw_data, 14, HAL_MAX_DELAY);
+
+    // Verileri birleştir (her veri 16-bit, 2 byte)
+    data->accel_x = (int16_t)(raw_data[0] << 8 | raw_data[1]);
+    data->accel_y = (int16_t)(raw_data[2] << 8 | raw_data[3]);
+    data->accel_z = (int16_t)(raw_data[4] << 8 | raw_data[5]);
+    data->temp = (int16_t)(raw_data[6] << 8 | raw_data[7]);
+    data->gyro_x = (int16_t)(raw_data[8] << 8 | raw_data[9]);
+    data->gyro_y = (int16_t)(raw_data[10] << 8 | raw_data[11]);
+    data->gyro_z = (int16_t)(raw_data[12] << 8 | raw_data[13]);
+}
+
+/**
+ * @brief Sadece ivmeölçer verilerini okur
+ * @param hi2c: I2C handle pointer
+ * @param data: Veri yapısı pointer
+ */
+void MPU6050_Read_Accel(I2C_HandleTypeDef *hi2c, MPU6050_Data *data) {
+    uint8_t raw_data[6];
+
+    HAL_I2C_Mem_Read(hi2c, MPU6050_ADDR, MPU6050_REG_ACCEL_XOUT_H, 1, raw_data, 6, HAL_MAX_DELAY);
+
+    data->accel_x = (int16_t)(raw_data[0] << 8 | raw_data[1]);
+    data->accel_y = (int16_t)(raw_data[2] << 8 | raw_data[3]);
+    data->accel_z = (int16_t)(raw_data[4] << 8 | raw_data[5]);
+}
+
+/**
+ * @brief Sadece gyro verilerini okur
+ * @param hi2c: I2C handle pointer
+ * @param data: Veri yapısı pointer
+ */
+void MPU6050_Read_Gyro(I2C_HandleTypeDef *hi2c, MPU6050_Data *data) {
+    uint8_t raw_data[6];
+
+    HAL_I2C_Mem_Read(hi2c, MPU6050_ADDR, 0x43, 1, raw_data, 6, HAL_MAX_DELAY);
+
+    data->gyro_x = (int16_t)(raw_data[0] << 8 | raw_data[1]);
+    data->gyro_y = (int16_t)(raw_data[2] << 8 | raw_data[3]);
+    data->gyro_z = (int16_t)(raw_data[4] << 8 | raw_data[5]);
+}
+
+/**
+ * @brief Sıcaklık değerini Celsius'a çevirir
+ * @param temp_raw: Ham sıcaklık verisi
+ * @return Celsius cinsinden sıcaklık
+ */
+float MPU6050_Get_Temp(int16_t temp_raw) {
+    return (float)temp_raw / 340.0f + 36.53f;
+}

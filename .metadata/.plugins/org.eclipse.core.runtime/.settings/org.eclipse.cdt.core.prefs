@@ -18,3 +18,4 @@ indexer/skipReferences=false
 indexer/skipTypeReferences=false
 indexer/updatePolicy=0
 indexer/useHeuristicIncludeResolution=true
+org.eclipse.cdt.core.showSourceRootsAtTopLevelOfProject=true
