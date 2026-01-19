@@ -13,3 +13,12 @@ STM32F103C8T6 (Blue Pill)
 MPU6050 (Accelerometer sensor)
 
 ST-Link V2 (for programming)
+
+Core/
+├── Inc/
+│   ├── mpu6050.h       # MPU6050 sürücü header
+│   └── i2c.h           # I2C konfigürasyon
+└── Src/
+    ├── main.c          # Ana program
+    ├── mpu6050.c       # MPU6050 sürücü
+    └── i2c.c           # I2C başlatma
